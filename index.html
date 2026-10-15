@@ -378,6 +378,8 @@ section{position:relative}
 .m-grid li{padding-left:18px;position:relative}
 .m-grid li::before{content:"→";position:absolute;left:0;color:var(--accent)}
 .m-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px;align-items:center;justify-content:space-between}
+.m-actions .chips{margin-right:auto}
+.btn[hidden]{display:none}
 .m-close{position:fixed;top:18px;right:18px;width:46px;height:46px;border-radius:50%;background:var(--paper);border:1px solid var(--ink);font-size:20px;z-index:81;display:none}
 .modal.open+.m-close{display:grid;place-items:center}
 
@@ -929,6 +931,7 @@ em,.it{font-weight:inherit}
       </div>
       <div class="m-actions">
         <div class="chips" id="mStack"></div>
+        <a class="btn btn-line" id="mPdf" target="_blank" rel="noopener" hidden>Diagnóstico (PDF) <span class="arr">↗</span></a>
         <a class="btn btn-ink" id="mLink" target="_blank" rel="noopener">Abrir ao vivo <span class="arr">↗</span></a>
       </div>
     </div>
@@ -939,6 +942,18 @@ em,.it{font-weight:inherit}
 <script>
 /* ---------- dados dos projetos ---------- */
 const PROJ = {
+  painelfin:{cat:'fin',tag:'Dashboard web · Financeiro',title:'Painel Financeiro: caixa, DRE e recebíveis',img:'painel-financeiro',pos:'left top',
+    desc:'Fluxo de caixa, DRE gerencial mês a mês e contas a pagar e receber em 3 abas, com diagnóstico de 5 recomendações. Projeto demonstrativo com dados fictícios.',
+    prob:'Uma empresa de serviços que crescia, mas fechava o mês sem saber quanto tinha sobrado: contas a pagar e a receber em planilhas separadas, DRE só no fim do ano e caixa acompanhado pelo extrato do banco.',
+    q:['Quanto sobrou de fato no mês e como a margem líquida evoluiu?','Qual a receita mínima para cobrir a estrutura (ponto de equilíbrio)?','Quanto dos recebíveis já venceu e quem precisa ser cobrado?','Qual semana vai apertar o caixa nas próximas 4 semanas?'],
+    stack:['Python','HTML/CSS','SVG'],
+    link:'projetos/painel-financeiro/',pdf:'assets/diagnostico-financeiro.pdf'},
+  painelcom:{cat:'fin',tag:'Dashboard web · Comercial',title:'Painel Comercial: funil, equipe e pipeline',img:'painel-comercial',pos:'left top',
+    desc:'Funil de vendas, meta por vendedor, conversão por canal e previsão ponderada do pipeline em 3 abas, com diagnóstico de 5 recomendações. Projeto demonstrativo com dados fictícios.',
+    prob:'A empresa tinha CRM, mas a gestão comercial era no achômetro: ninguém sabia em que etapa os negócios travavam, quais canais traziam cliente de verdade nem quanto do pipeline tinha chance real de fechar.',
+    q:['Em que etapa do funil os negócios mais se perdem?','Quais canais convertem e quais só trazem volume?','Quem está acima ou abaixo da meta, e por quê?','Quanto do pipeline está parado e qual a previsão ponderada do mês?'],
+    stack:['Python','API de CRM','HTML/CSS','SVG'],
+    link:'projetos/painel-comercial/',pdf:'assets/diagnostico-comercial.pdf'},
   financeiro:{cat:'fin',tag:'Power BI · Financeiro',title:'Dashboard Financeiro',img:'bi-financeiro',
     desc:'Receitas, despesas, fluxo de caixa, indicadores de rentabilidade e projeções em um só painel.',
     prob:'A gestão acompanhava o financeiro em planilhas soltas e não tinha uma visão única para decidir sobre rentabilidade e investimento.',
@@ -989,7 +1004,7 @@ Object.entries(PROJ).filter(([,p])=>p.cat!=='x').forEach(([id,p],i)=>{
   const el = document.createElement('button');
   el.className = 'card reveal' + (i%3===1?' d1':i%3===2?' d2':'');
   el.dataset.cat = p.cat; el.dataset.case = id;
-  el.innerHTML = `<div class="thumb"><img src="assets/${p.img}.webp" alt="${p.title}" loading="lazy"><span class="open">↗</span></div>
+  el.innerHTML = `<div class="thumb"><img src="assets/${p.img}.webp" alt="${p.title}" loading="lazy"${p.pos?` style="object-position:${p.pos}"`:''}><span class="open">↗</span></div>
     <div class="body"><span class="tag">${p.tag}</span><h4>${p.title}</h4><p>${p.desc}</p>
     <div class="chips">${p.stack.map(s=>`<span class="chip">${s}</span>`).join('')}</div></div>`;
   grid.appendChild(el);
@@ -1012,6 +1027,7 @@ function openCase(id){
   document.getElementById('mQ').innerHTML=p.q.map(x=>`<li>${x}</li>`).join('');
   document.getElementById('mStack').innerHTML=p.stack.map(s=>`<span class="chip">${s}</span>`).join('');
   document.getElementById('mLink').href=p.link;
+  const pdf=document.getElementById('mPdf'); pdf.hidden=!p.pdf; if(p.pdf) pdf.href=p.pdf;
   modal.classList.add('open'); document.body.style.overflow='hidden'; modal.scrollTop=0;
 }
 function closeCase(){modal.classList.remove('open');document.body.style.overflow=''}
